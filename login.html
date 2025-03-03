@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета пропусков - Вход</title>
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Система учета пропусков</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="login.html" class="active">Вход</a></li>
+                    <li><a href="registration.html">Регистрация</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="auth-form-container">
+            <div class="form-header">
+                <h1>Вход в систему</h1>
+                <p>Введите данные для входа в систему учета пропусков</p>
+            </div>
+            
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Введите ваш email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Войти</button>
+                
+                <div class="form-footer">
+                    <p>Нет аккаунта? <a href="registration.html">Зарегистрироваться</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="assets/js/login.js"></script>
+</body>
+</html>
