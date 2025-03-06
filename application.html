@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета пропусков - Создание заявки</title>
+    <link rel="stylesheet" href="assets/css/application.css">
+</head>
+<body>
+    <!-- Добавляем header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Система учета пропусков</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="profile.html">Профиль</a></li>
+                    <li><a href="create-application.html" class="active">Создать заявку</a></li>
+                    <li><a href="#" id="logout-btn">Выход</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="application-container">
+            <div class="section-header">
+                <h2>Создание заявки на пропуск</h2>
+            </div>
+            
+            <form id="application-form" class="application-form">
+                <div class="form-group">
+                    <label for="fromDate">Дата начала</label>
+                    <input type="date" id="fromDate" name="fromDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="toDate">Дата окончания</label>
+                    <input type="date" id="toDate" name="toDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Причина пропуска</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Укажите причину пропуска" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Подтверждающий документ</label>
+                    <input type="file" id="image" name="image" accept="image/*,.pdf">
+                    <div class="form-hint">Допустимые форматы: JPG, PNG, PDF. Максимальный размер: 5MB</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Отправить заявку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/application.js"></script>
+</body>
+</html>
