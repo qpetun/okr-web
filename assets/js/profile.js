@@ -21,6 +21,8 @@ async function fetchProfileData() {
     const profileInfo = document.getElementById('profile-info');
     
     try {
+        // Закомментированный API-вызов
+        /*
         const response = await fetch('/profile', {
             method: 'GET',
             headers: {
@@ -34,6 +36,16 @@ async function fetchProfileData() {
         }
         
         const data = await response.json();
+        */
+        
+        // Заполнение тестовыми данными
+        const data = {
+            surname: 'Иванов',
+            name: 'Иван',
+            patronymic: 'Иванович',
+            email: 'ivan.ivanov@example.com'
+        };
+        
         profileData = data;
         
         // Отображаем профиль только если уже получены данные о ролях
@@ -53,6 +65,8 @@ async function fetchProfileData() {
 
 async function fetchUserRoles() {
     try {
+        // Закомментированный API-вызов
+        /*
         const response = await fetch('/roles', {
             method: 'GET',
             headers: {
@@ -66,6 +80,16 @@ async function fetchUserRoles() {
         }
         
         const data = await response.json();
+        */
+        
+        // Заполнение тестовыми данными
+        const data = {
+            isAdmin: false,
+            isDean: false,
+            isTeacher: true,
+            isStudent: false
+        };
+        
         userRoles = data;
         
         // Отображаем профиль только если уже получены данные профиля
@@ -81,6 +105,7 @@ async function fetchUserRoles() {
         }
     }
 }
+
 
 // Функция для отображения данных профиля
 // Функция для отображения данных профиля
@@ -156,6 +181,7 @@ function showEditForm() {
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" value="${profileData.email || ''}" disabled>
                 <div class="form-hint">Email нельзя изменить</div>
+                <div class="form-hint"></div>
             </div>
             <div class="form-actions">
                 <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Отмена</button>
