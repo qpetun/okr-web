@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Отправка данных
         try {
-            const response = await fetch('api/registration', {
+            const response = await fetch('http://51.250.46.2:1111/registration', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

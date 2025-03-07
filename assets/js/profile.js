@@ -22,8 +22,8 @@ async function fetchProfileData() {
     
     try {
         // Закомментированный API-вызов
-        /*
-        const response = await fetch('/profile', {
+        
+        const response = await fetch('http://51.250.46.2:1111/profile', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,15 +36,15 @@ async function fetchProfileData() {
         }
         
         const data = await response.json();
-        */
         
+        /*
         // Заполнение тестовыми данными
         const data = {
             surname: 'Иванов',
             name: 'Иван',
             patronymic: 'Иванович',
             email: 'ivan.ivanov@example.com'
-        };
+        };*/
         
         profileData = data;
         
@@ -65,9 +65,9 @@ async function fetchProfileData() {
 
 async function fetchUserRoles() {
     try {
-        // Закомментированный API-вызов
-        /*
-        const response = await fetch('/roles', {
+        
+        
+        const response = await fetch('http://51.250.46.2:1111/roles', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -80,15 +80,15 @@ async function fetchUserRoles() {
         }
         
         const data = await response.json();
-        */
+        
         
         // Заполнение тестовыми данными
-        const data = {
+        /*const data = {
             isAdmin: false,
             isDean: false,
             isTeacher: true,
             isStudent: false
-        };
+        };*/
         
         userRoles = data;
         
@@ -220,7 +220,7 @@ async function updateProfile(e) {
     formActions.innerHTML = '<div class="loading-spinner">Сохранение...</div>';
     
     try {
-        const response = await fetch('/profile', {
+        const response = await fetch('http://51.250.46.2:1111/profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -272,13 +272,13 @@ function showMessage(type, text) {
 
 // Функция для получения токена из localStorage
 function getToken() {
-    return localStorage.getItem('token') || '';
+    return localStorage.getItem('authToken') || '';
 }
 
 // Функция для выхода из системы
 function logout() {
     // Удаляем токен из localStorage
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     // Перенаправляем на страницу входа
     window.location.href = 'login.html';
 }

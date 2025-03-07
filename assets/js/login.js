@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Отправка данных
         try {
-            const response = await fetch('api/login', {
+            const response = await fetch('http://51.250.46.2:1111/login', {
                 method: 'POST',
-                headers: {
+                headers: {                    
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(loginData)
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     localStorage.setItem('authToken', data.token);
                     
                     // Перенаправляем на главную страницу или дашборд
-                    window.location.href = 'index.html'; // или dashboard.html
+                    window.location.href = 'profile.html'; 
                 } else {
                     alert('Ошибка авторизации: токен не получен');
                 }

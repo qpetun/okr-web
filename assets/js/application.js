@@ -94,7 +94,7 @@ async function submitApplication(e) {
             image: imageFile ? await fileToBase64(imageFile) : null
         };
         
-        const response = await fetch('/application', {
+        const response = await fetch('http://51.250.46.2:1111/application', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
