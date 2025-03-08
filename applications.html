@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета пропусков - Заявки</title>
+    <link rel="stylesheet" href="assets/css/applications.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Система учета пропусков</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="applications.html" class="active">Заявки</a></li>
+                    <li><a href="profile.html">Профиль</a></li>
+                    <li><a href="#" id="logout-btn">Выход</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="applications-container">
+            <div class="applications-header">
+                <h2>Заявки на пропуск занятий</h2>
+                <div class="applications-actions">
+                    <a href="application.html" id="create-application-btn" class="btn btn-primary">Создать заявку</a>
+                    <button id="export-applications-btn" class="btn btn-secondary">Экспорт</button>
+                </div>
+            </div>
+            
+            <div class="applications-filters">
+                <div class="filter-group">
+                    <label for="status-filter">Статус:</label>
+                    <select id="status-filter">
+                        <option value="all">Все</option>
+                        <option value="inProcess">На проверке</option>
+                        <option value="approved">Одобрено</option>
+                        <option value="rejected">Отклонено</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="date-from">С даты:</label>
+                    <input type="date" id="date-from">
+                </div>
+                <div class="filter-group">
+                    <label for="date-to">По дату:</label>
+                    <input type="date" id="date-to">
+                </div>
+                <div class="filter-group search-group">
+                    <label for="search-input">Поиск:</label>
+                    <input type="text" id="search-input" placeholder="Введите текст для поиска">
+                </div>
+                <button id="apply-filters-btn" class="btn btn-secondary">Применить</button>
+            </div>
+            
+            <div class="applications-list" id="applications-list">
+                <div class="loading-spinner">Загрузка заявок...</div>
+            </div>
+            
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/applications.js"></script>
+</body>
+</html>

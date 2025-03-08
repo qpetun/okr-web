@@ -88,11 +88,12 @@ async function submitApplication(e) {
     try {
         // Преобразуем FormData в JSON для отправки
         const applicationData = {
-            fromDate: fromDateISO,
-            toDate: toDateISO,
-            description: description,
-            image: imageFile ? await fileToBase64(imageFile) : null
-        };
+            fromDate: "2025-03-08T05:28:40.434Z",
+            toDate: "2025-03-08T05:28:40.434Z",
+            description: "string",
+            image: "string"
+          }
+        console.log(applicationData);
         
         const response = await fetch('http://51.250.46.2:1111/application', {
             method: 'POST',
