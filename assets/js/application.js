@@ -88,11 +88,11 @@ async function submitApplication(e) {
     try {
         // Преобразуем FormData в JSON для отправки
         const applicationData = {
-            fromDate: "2025-03-08T05:28:40.434Z",
-            toDate: "2025-03-08T05:28:40.434Z",
-            description: "string",
-            image: "string"
-          }
+            fromDate: fromDateISO,
+            toDate: toDateISO,
+            description: description,
+            image: imageFile ? await fileToBase64(imageFile) : null
+        };
         console.log(applicationData);
         
         const response = await fetch('http://51.250.46.2:1111/application', {
@@ -101,7 +101,8 @@ async function submitApplication(e) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getToken()}`
             },
-            body: JSON.stringify(applicationData)
+            body: JSON.stringify(applicationData),
+            mode: 'cors' // явно указываем режим CORS
         });
         
         if (!response.ok) {
@@ -165,13 +166,13 @@ function showMessage(type, text) {
 
 // Функция для получения токена из localStorage
 function getToken() {
-    return localStorage.getItem('token') || '';
+    return localStorage.getItem('authToken') || '';
 }
 
 // Функция для выхода из системы
 function logout() {
     // Удаляем токен из localStorage
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     // Перенаправляем на страницу входа
     window.location.href = 'login.html';
 }
