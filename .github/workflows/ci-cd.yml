@@ -14,10 +14,10 @@ jobs:
 
       - name: Копирование проекта в рабочую директорию
         run: |
-          mkdir -p /home/okr_web
+          sudo mkdir -p /home/okr_web
           pwd
           ls
-          cp -r . /home/okr_web
+          sudo cp -r . /home/okr_web
 
       - name: Перезапуск Nginx
         run: sudo systemctl restart nginx
