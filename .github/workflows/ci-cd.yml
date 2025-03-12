@@ -1,0 +1,28 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build:
+    runs-on: self-hosted 
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v2
+
+      - name: Копирование проекта в рабочую директорию
+        run: |
+          sudo mkdir -p /home/okr_web
+          pwd
+          ls
+          sudo cp -r . /home/okr_web
+
+      - name: Перезапуск Nginx
+        run: sudo systemctl restart nginx
+      
+
+
+
+      
