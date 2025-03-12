@@ -2,7 +2,7 @@
 @import url('registration.css');
 
 /* Импорт базовых стилей */
-@import url('common.css');
+
 
 /* Стили для страницы заявок */
 .applications-container {
@@ -113,7 +113,7 @@
     color: #856404;
 }
 
-.status-approved {
+.status-accepted {
     background-color: #d4edda;
     color: #155724;
 }

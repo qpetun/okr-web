@@ -355,11 +355,11 @@ function displayFilteredApplications() {
                 statusText = 'На проверке'; 
                 statusClass = 'status-inProcess'; 
                 break;
-            case 'approved': 
+            case 'Accepted': 
                 statusText = 'Одобрено'; 
-                statusClass = 'status-approved'; 
+                statusClass = 'status-accepted'; 
                 break;
-            case 'rejected': 
+            case 'Rejected': 
                 statusText = 'Отклонено'; 
                 statusClass = 'status-rejected'; 
                 break;
@@ -386,6 +386,12 @@ function displayFilteredApplications() {
     
     // Обновляем пагинацию
     updatePagination(filteredApplications.length);
+    document.querySelectorAll('.application-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const applicationId = this.getAttribute('data-id');
+            window.location.href = `application-details.html?id=${applicationId}`;
+        });
+    });
 }
 
 // Обновление пагинации
@@ -495,8 +501,8 @@ function exportApplications() {
         let status = '';
         switch (app.status) {
             case 'inProcess': status = 'На проверке'; break;
-            case 'approved': status = 'Одобрено'; break;
-            case 'rejected': status = 'Отклонено'; break;
+            case 'Accepted': status = 'Одобрено'; break;
+            case 'Rejected': status = 'Отклонено'; break;
             default: status = 'Неизвестно';
         }
         

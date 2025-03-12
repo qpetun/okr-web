@@ -1,0 +1,296 @@
+/* Импорт базовых стилей */
+@import url('registration.css');
+
+/* Стили для страницы детальной информации о заявке */
+.application-details-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    padding: 25px;
+    margin: 20px 0;
+}
+
+.application-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.application-details-header h2 {
+    color: #346CB0;
+    margin: 0;
+}
+
+.application-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    color: #666;
+}
+
+.application-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.application-status-bar {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.status-label {
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.application-status {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: auto;
+}
+
+.status-inProcess {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.application-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+
+.info-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.info-label {
+    font-weight: 500;
+    width: 180px;
+    color: #555;
+}
+
+.info-value {
+    flex: 1;
+    min-width: 200px;
+}
+
+.document-link a {
+    display: inline-flex;
+    align-items: center;
+    color: #346CB0;
+    text-decoration: none;
+    gap: 5px;
+}
+
+.document-link a:hover {
+    text-decoration: underline;
+}
+
+.document-link a::before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23346CB0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>');
+    background-size: contain;
+}
+
+.extensions-section {
+    margin-top: 20px;
+}
+
+.extensions-section h3 {
+    color: #346CB0;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.extensions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.extension-item {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.extension-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.extension-date {
+    font-weight: 500;
+}
+
+.extension-status {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.extension-description {
+    margin-bottom: 10px;
+}
+
+.extension-document {
+    font-size: 14px;
+}
+
+.extension-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.extension-form-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+}
+
+.extension-form-container h3 {
+    color: #346CB0;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input[type="date"],
+.form-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.no-extensions {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+/* Скрываем элементы в зависимости от роли */
+.student-only,
+.dean-only,
+.teacher-only {
+    display: none;
+}
+
+/* Адаптивный дизайн */
+@media (max-width: 768px) {
+    .application-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .application-actions {
+        width: 100%;
+    }
+
+    .application-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .status-actions {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .status-actions button {
+        flex: 1;
+    }
+
+    .info-label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        width: 100%;
+    }
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр заявки</title>    
+    <link rel="stylesheet" href="assets/css/application-details.css">
+</head>
+<body>
+    <header class="main-header"></header>
+
+    <div class="container">
+        <div class="application-details-container">
+            <div class="application-details-header">
+                <h2>Просмотр заявки на пропуск занятий</h2>
+                <div class="application-actions">
+                    <a href="applications.html" class="btn btn-secondary">Назад к списку</a>
+                    <button id="delete-application-btn" class="btn btn-danger student-only">Удалить</button>
+                </div>
+            </div>
+            
+            <div id="application-loading" class="loading-spinner">Загрузка данных заявки...</div>
+            
+            <div id="application-content" class="application-content" style="display: none;">
+                <div class="application-status-bar">
+                    <div class="status-label">Статус:</div>
+                    <div id="application-status" class="application-status"></div>
+                    <div class="dean-only status-actions">
+                        <button id="approve-application-btn" class="btn btn-success">Одобрить</button>
+                        <button id="reject-application-btn" class="btn btn-danger">Отклонить</button>
+                    </div>
+                </div>
+                
+                <div class="application-main-info">
+                    <div class="info-row">
+                        <div class="info-label">Студент:</div>
+                        <div id="student-name" class="info-value"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Период:</div>
+                        <div id="application-period" class="info-value"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Причина:</div>
+                        <div id="application-description" class="info-value"></div>
+                    </div>
+                    <div class="info-row" id="document-container">
+                        <div class="info-label">Подтверждающий документ:</div>
+                        <div id="application-document" class="info-value document-link"></div>
+                    </div>
+                </div>
+                
+                <div class="extensions-section">
+                    <h3>Продления</h3>
+                    <div id="extensions-list" class="extensions-list">
+                        <!-- Сюда будут добавлены продления -->
+                    </div>
+                    
+                    <div class="student-only">
+                        <button id="add-extension-btn" class="btn btn-primary">Добавить продление</button>
+                    </div>
+                </div>
+                
+                <div id="extension-form-container" class="extension-form-container" style="display: none;">
+                    <h3>Добавление продления</h3>
+                    <form id="extension-form">
+                        <div class="form-group">
+                            <label for="extension-to-date">Продлить до:</label>
+                            <input type="date" id="extension-to-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="extension-description">Причина продления:</label>
+                            <textarea id="extension-description" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="extension-document">Подтверждающий документ:</label>
+                            <input type="file" id="extension-document" accept="image/*,.pdf">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancel-extension-btn" class="btn btn-secondary">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/header.js"></script>
+    <script src="assets/js/application-details.js"></script>
+</body>
+</html>
