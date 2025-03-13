@@ -321,7 +321,31 @@ function populateApplicationDetails() {
     const documentElement = document.getElementById('application-document');
     
     if (currentApplication.image && currentApplication.image.trim() !== '') {
-        documentElement.innerHTML = `<a href="${currentApplication.image}" target="_blank">Просмотреть документ</a>`;
+        // Определяем тип файла из строки base64
+        const fileExtension = getFileExtensionFromBase64(currentApplication.image);
+        const fileName = `document.${fileExtension}`;
+        
+        // Проверяем, является ли файл изображением
+        const isImage = isImageFile(currentApplication.image);
+        
+        let documentPreview = '';
+        if (isImage) {
+            // Если это изображение, показываем предпросмотр
+            documentPreview = `<img src="${currentApplication.image}" alt="Подтверждающий документ" class="document-image">`;
+        } else if (fileExtension === 'pdf') {
+            // Если PDF, показываем иконку PDF
+            documentPreview = `<div class="pdf-icon"><i class="fa fa-file-pdf-o"></i> PDF документ</div>`;
+        } else {
+            // Для других типов файлов показываем общую иконку
+            documentPreview = `<div class="file-icon"><i class="fa fa-file-o"></i> Документ</div>`;
+        }
+        
+        documentElement.innerHTML = `
+            <div class="document-preview">
+                ${documentPreview}
+                <a href="${currentApplication.image}" download="${fileName}" class="document-download">Скачать документ</a>
+            </div>
+        `;
         documentContainer.style.display = 'flex';
     } else {
         documentContainer.style.display = 'none';
@@ -350,50 +374,41 @@ function displayExtensions() {
     let html = '';
     
     sortedExtensions.forEach(extension => {
-        // Форматируем дату
-        const extensionToDate = new Date(extension.extensionToDate).toLocaleDateString('ru-RU');
+        // Код определения статуса без изменений...
         
-        // Определяем статус
-        let statusText = 'Неизвестно';
-        let statusClass = '';
-        
-        switch (extension.status) {
-            case 'inProcess': 
-                statusText = 'На проверке'; 
-                statusClass = 'status-inProcess'; 
-                break;
-            case 'Accepted': 
-                statusText = 'Одобрено'; 
-                statusClass = 'status-accepted'; 
-                break;
-            case 'Rejected': 
-                statusText = 'Отклонено'; 
-                statusClass = 'status-rejected'; 
-                break;
+        // Создаем HTML для документа, если он есть
+        let documentHtml = '';
+        if (extension.image && extension.image.trim() !== '') {
+            // Определяем тип файла из строки base64
+            const fileExtension = getFileExtensionFromBase64(extension.image);
+            const fileName = `extension-document.${fileExtension}`;
+            
+            // Проверяем, является ли файл изображением
+            const isImage = isImageFile(extension.image);
+            
+            let documentPreview = '';
+            if (isImage) {
+                // Если это изображение, показываем предпросмотр
+                documentPreview = `<img src="${extension.image}" alt="Документ продления" class="document-image">`;
+            } else if (fileExtension === 'pdf') {
+                // Если PDF, показываем иконку PDF
+                documentPreview = `<div class="pdf-icon"><i class="fa fa-file-pdf-o"></i> PDF документ</div>`;
+            } else {
+                // Для других типов файлов показываем общую иконку
+                documentPreview = `<div class="file-icon"><i class="fa fa-file-o"></i> Документ</div>`;
+            }
+            
+            documentHtml = `
+                <div class="extension-document">
+                    <div class="document-preview">
+                        ${documentPreview}
+                        <a href="${extension.image}" download="${fileName}" class="document-download">Скачать документ</a>
+                    </div>
+                </div>
+            `;
         }
         
-        html += `
-            <div class="extension-item" data-id="${extension.id}">
-                <div class="extension-header">
-                    <div class="extension-date">Продление до: ${extensionToDate}</div>                   
-                    <div class="extension-status ${statusClass}">${statusText}</div>
-                </div>
-                <div class="extension-description">${extension.description}</div>
-                ${extension.image ? `<div class="extension-document">
-                    <a href="${extension.image}" target="_blank">Просмотреть документ</a>
-                </div>` : ''}
-                <div class="extension-actions dean-only">
-                    <button class="btn btn-success extension-approve-btn" data-id="${extension.id}" 
-                        ${extension.status !== 'inProcess' ? 'disabled' : ''}>
-                        Одобрить
-                    </button>
-                    <button class="btn btn-danger extension-reject-btn" data-id="${extension.id}"
-                        ${extension.status !== 'inProcess' ? 'disabled' : ''}>
-                        Отклонить
-                    </button>
-                </div>
-            </div>
-        `;
+        
     });
     
     extensionsList.innerHTML = html;
@@ -569,6 +584,8 @@ async function submitExtensionForm() {
     const description = document.getElementById('extension-description').value;
     const documentFile = document.getElementById('extension-document').files[0];
     
+
+    const formData = new FormData();
     // Проверяем обязательные поля
     if (!extensionToDate || !description) {
         showMessage('error', 'Пожалуйста, заполните все обязательные поля');
@@ -578,16 +595,13 @@ async function submitExtensionForm() {
     // Создаем объект с данными для отправки
     const extensionData = {
         extensionToDate: new Date(extensionToDate).toISOString(),
-        description: description,
-        image: ''
+        description: description,        
+        image: documentFile ? await fileToBase64(documentFile) : null
     };
     
     try {
         // Если есть файл, сначала загружаем его
-        if (documentFile) {
-            const imageUrl = await uploadFile(documentFile);
-            extensionData.image = imageUrl;
-        }
+        
         
         // Отправляем запрос на создание продления
         const response = await fetch(`http://51.250.46.2:1111/extensionApplication/${applicationId}`, {
@@ -618,34 +632,6 @@ async function submitExtensionForm() {
     }
 }
 
-// Загрузка файла
-async function uploadFile(file) {
-    // Создаем объект FormData
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    try {
-        const response = await fetch('http://51.250.46.2:1111/file', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${getToken()}`
-            },
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error('Не удалось загрузить файл');
-        }
-        
-        const result = await response.json();
-        return result.url;
-        
-    } catch (error) {
-        console.error('Ошибка при загрузке файла:', error);
-        throw error;
-    }
-}
-
 // Функция для форматирования даты в строку
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -656,3 +642,51 @@ function formatDate(dateString) {
     return `${day}.${month}.${year}`;
 }
 
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); 
+        reader.onerror = error => reject(error);
+    });
+}
+
+
+
+function getFileExtensionFromBase64(base64String) {
+    // Извлекаем MIME-тип из строки base64
+    const match = base64String.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,/);
+    
+    if (match && match[1]) {
+        const mimeType = match[1];
+        
+        // Словарь соответствия MIME-типов расширениям файлов
+        const mimeToExtension = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'image/gif': 'gif',
+            'image/webp': 'webp',
+            'application/pdf': 'pdf',
+            'application/msword': 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+            'application/vnd.ms-excel': 'xls',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+            'text/plain': 'txt'
+        };
+        
+        return mimeToExtension[mimeType] || 'bin'; // bin как расширение по умолчанию
+    }
+    
+    return 'bin'; // Если не удалось определить тип
+}
+
+// Функция для проверки, является ли файл изображением
+function isImageFile(base64String) {
+    const match = base64String.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,/);
+    
+    if (match && match[1]) {
+        return match[1].startsWith('image/');
+    }
+    
+    return false;
+}

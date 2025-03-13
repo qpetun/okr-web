@@ -93,7 +93,7 @@ async function submitApplication(e) {
             description: description,
             image: imageFile ? await fileToBase64(imageFile) : null
         };
-        console.log(applicationData);
+        
         
         const response = await fetch('http://51.250.46.2:1111/application', {
             method: 'POST',
@@ -136,10 +136,12 @@ function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Получаем только base64, без префикса
+        reader.onload = () => resolve(reader.result); 
         reader.onerror = error => reject(error);
     });
 }
+
+
 
 // Функция для отображения сообщений
 function showMessage(type, text) {
