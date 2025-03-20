@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
    
     // Установка минимальной даты (сегодня)
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('fromDate').min = today;
+    // document.getElementById('fromDate').min = today;
     document.getElementById('toDate').min = today;
     
     // Обработчик для кнопки отмены

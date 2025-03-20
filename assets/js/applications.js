@@ -361,9 +361,30 @@ function displayFilteredApplications() {
                 break;
         }
         
+        // Проверяем наличие неподтвержденных продлений
+        const hasUnconfirmedExtensions = app.extensions && app.extensions.some(ext => ext.status === 'inProcess');
+        
+        // Формируем информацию о продлениях
+        let extensionsInfo = '';
+        if (app.extensions && app.extensions.length > 0) {
+            const unconfirmedCount = app.extensions.filter(ext => ext.status === 'inProcess').length;
+            
+            if (unconfirmedCount > 0) {
+                // Если есть неподтвержденные продления, подсвечиваем их
+                extensionsInfo = `
+                    <div class="has-extensions has-unconfirmed-extensions">
+                        Продлений: ${app.extensions.length} 
+                        <span class="unconfirmed-badge">${unconfirmedCount} на проверке</span>
+                    </div>
+                `;
+            } else {
+                extensionsInfo = `<div class="has-extensions">Продлений: ${app.extensions.length}</div>`;
+            }
+        }
+        
         // Формируем карточку заявки
         html += `
-            <div class="application-card" data-id="${app.id}">
+            <div class="application-card ${hasUnconfirmedExtensions ? 'has-unconfirmed' : ''}" data-id="${app.id}">
                 <div class="application-header">
                     <div class="application-dates">${fromDate} - ${toDate}</div>
                     <div class="application-status ${statusClass}">${statusText}</div>
@@ -372,7 +393,7 @@ function displayFilteredApplications() {
                 <div class="application-description">${app.description.substring(0, 100)}${app.description.length > 100 ? '...' : ''}</div>
                 <div class="application-footer">
                     ${app.image ? '<div class="has-document">Документ прикреплен</div>' : ''}
-                    ${app.extensions && app.extensions.length > 0 ? `<div class="has-extensions">Продлений: ${app.extensions.length}</div>` : ''}
+                    ${extensionsInfo}
                 </div>
             </div>
         `;
@@ -382,6 +403,8 @@ function displayFilteredApplications() {
     
     // Обновляем пагинацию
     updatePagination(filteredApplications.length);
+    
+    // Добавляем обработчики для карточек заявок
     document.querySelectorAll('.application-card').forEach(card => {
         card.addEventListener('click', function() {
             const applicationId = this.getAttribute('data-id');
@@ -471,7 +494,7 @@ function updatePagination(totalItems) {
     });
 }
 
-// Экспорт заявок в CSV
+
 // Экспорт заявок в CSV
 function exportApplications() {
     // Получаем отфильтрованные заявки

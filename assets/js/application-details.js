@@ -420,8 +420,8 @@ function displayExtensions() {
         if ((userRoles.isDean || userRoles.isAdmin) && extension.status === 'inProcess') {
             actionButtons = `
                 <div class="extension-actions">
-                    <button class="btn btn-success" data-id="${extension.id}">Одобрить</button>
-                    <button class="btn btn-danger" data-id="${extension.id}">Отклонить</button>
+                    <button class="extension-approve-btn" data-id="${extension.id}">Одобрить</button>
+                    <button class="extension-reject-btn" data-id="${extension.id}">Отклонить</button>
                 </div>
             `;
         }
