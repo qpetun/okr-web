@@ -241,8 +241,8 @@ async function loadApplicationDetails() {
     const applicationContent = document.getElementById('application-content');
 
     try {
-        // Загружаем все заявки
-        const response = await fetch('http://51.250.46.2:1111/application', {
+        // Загружаем конкретную заявку по ID
+        const response = await fetch(`http://51.250.46.2:1111/application/${applicationId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -251,17 +251,11 @@ async function loadApplicationDetails() {
         });
 
         if (!response.ok) {
-            throw new Error('Не удалось загрузить данные заявок');
+            throw new Error('Не удалось загрузить данные заявки');
         }
 
-        const applications = await response.json();
-        
-        // Находим нужную заявку по ID
-        currentApplication = applications.find(app => app.id === applicationId);
-        
-        if (!currentApplication) {
-            throw new Error('Заявка не найдена');
-        }
+        // Получаем данные заявки
+        currentApplication = await response.json();
         
         console.log('Данные заявки:', currentApplication);
 
@@ -356,6 +350,7 @@ function populateApplicationDetails() {
 }
 
 // Отображение продлений
+// Отображение продлений
 function displayExtensions() {
     const extensionsList = document.getElementById('extensions-list');
     
@@ -374,7 +369,24 @@ function displayExtensions() {
     let html = '';
     
     sortedExtensions.forEach(extension => {
-        // Код определения статуса без изменений...
+        // Определяем статус продления
+        let statusText = 'Неизвестно';
+        let statusClass = '';
+        
+        switch (extension.status) {
+            case 'inProcess': 
+                statusText = 'На проверке'; 
+                statusClass = 'status-inProcess'; 
+                break;
+            case 'Accepted': 
+                statusText = 'Одобрено'; 
+                statusClass = 'status-accepted'; 
+                break;
+            case 'Rejected': 
+                statusText = 'Отклонено'; 
+                statusClass = 'status-rejected'; 
+                break;
+        }
         
         // Создаем HTML для документа, если он есть
         let documentHtml = '';
@@ -408,7 +420,31 @@ function displayExtensions() {
             `;
         }
         
+        // Кнопки управления для деканата (для продлений в статусе "На проверке")
+        let actionButtons = '';
+        if ((userRoles.isDean || userRoles.isAdmin) && extension.status === 'inProcess') {
+            actionButtons = `
+                <div class="extension-actions">
+                    <button class="btn btn-success" data-id="${extension.id}">Одобрить</button>
+                    <button class="btn btn-danger" data-id="${extension.id}">Отклонить</button>
+                </div>
+            `;
+        }
         
+        // Собираем HTML для одного продления
+        html += `
+            <div class="extension-item">
+                <div class="extension-header">
+                    <div class="extension-dates">
+                        Продление до: ${formatDate(extension.extensionToDate)}
+                    </div>
+                    <div class="extension-status ${statusClass}">${statusText}</div>
+                </div>
+                <div class="extension-description">${extension.description}</div>
+                ${documentHtml}
+                ${actionButtons}
+            </div>
+        `;
     });
     
     extensionsList.innerHTML = html;
