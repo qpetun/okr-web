@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем наличие токена авторизации
+    if (!getToken()) {
+        window.location.href = 'login.html';
+        return;
+    }
     // Получаем текущую страницу
     const currentPage = window.location.pathname.split('/').pop();
     

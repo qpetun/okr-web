@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем наличие токена авторизации
-    if (!getToken()) {
-        window.location.href = 'login.html';
-        return;
-    }
+    
     
     // Инициализация страницы
     initPage();
