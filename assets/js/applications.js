@@ -42,9 +42,11 @@ async function initPage() {
 // Настройка обработчиков событий
 function setupEventListeners() {
     // Обработчик для кнопки выхода
-    document.getElementById('logout-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        logout();
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'logout-btn') {
+            e.preventDefault();
+            logout();
+        }
     });
     
     // Обработчик для кнопки экспорта

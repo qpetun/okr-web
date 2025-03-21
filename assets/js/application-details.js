@@ -50,9 +50,11 @@ function getApplicationIdFromUrl() {
 // Настройка обработчиков событий
 function setupEventListeners() {
     // Обработчик для кнопки выхода
-    document.getElementById('logout-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        logout();
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'logout-btn') {
+            e.preventDefault();
+            logout();
+        }
     });
 
     // Обработчик для кнопки удаления заявки
@@ -417,11 +419,11 @@ function displayExtensions() {
         
         // Кнопки управления для деканата (для продлений в статусе "На проверке")
         let actionButtons = '';
-        if ((userRoles.isDean || userRoles.isAdmin) && extension.status === 'inProcess') {
+        if ((userRoles.isDean || userRoles.isAdmin)) {
             actionButtons = `
                 <div class="extension-actions">
-                    <button class="extension-approve-btn" data-id="${extension.id}">Одобрить</button>
-                    <button class="extension-reject-btn" data-id="${extension.id}">Отклонить</button>
+                    <button class="btn extension-approve-btn" data-id="${extension.id}">Одобрить</button>
+                    <button class="btn extension-reject-btn" data-id="${extension.id}">Отклонить</button>
                 </div>
             `;
         }
