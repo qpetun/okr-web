@@ -75,22 +75,23 @@
     font-size: 12px;
     margin-right: 5px;
     color: white;
+    font-weight: 500;
 }
 
 .role-student {
-    background-color: #28a745;
+    background-color: #4CAF50; /* Более приятный зеленый */
 }
 
 .role-teacher {
-    background-color: #007bff;
+    background-color: #2196F3; /* Более приятный синий */
 }
 
 .role-dean {
-    background-color: #6f42c1;
+    background-color: #9C27B0; /* Фиолетовый для деканата */
 }
 
 .role-admin {
-    background-color: #dc3545;
+    background-color: #F44336; /* Красный для администратора */
 }
 
 .btn-manage {
@@ -184,8 +185,25 @@
 .role-option {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.role-option:last-child {
+    border-bottom: none;
+}
+
+/* Стили для радиокнопок */
+.role-option input[type="radio"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+    accent-color: #346CB0; /* Подсветка выбранной радиокнопки в цвет темы */
+}
+
+/* Стиль для отключенных опций */
+.role-option[style*="opacity: 0.5"] input[type="radio"] {
+    cursor: not-allowed;
 }
 
 .form-actions {
@@ -239,6 +257,14 @@
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+/* Стили для отображения ролей пользователя в таблице */
+.user-roles {
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 @media (max-width: 768px) {
