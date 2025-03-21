@@ -161,6 +161,10 @@
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    line-height: 20px; /* Добавлено для выравнивания */
+    margin-top: -5px; /* Добавлено для поднятия крестика */
+    position: relative; /* Добавлено для лучшего позиционирования */
+    top: -5px; /* Добавлено для поднятия крестика */
 }
 
 .close-modal:hover {

@@ -2,7 +2,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Функция проверки токена
     function isValidToken() {
         const token = localStorage.getItem('authToken');
-        if (!token) return false;  
+        if (!token) return false;
+        
+        // Проверяем срок действия токена, если он сохранен
+        const tokenExpiry = localStorage.getItem('tokenExpiry');
+        if (tokenExpiry && new Date().getTime() > parseInt(tokenExpiry)) {
+            // Если токен истек, очищаем данные авторизации
+            clearAuthData();
+            return false;
+        }
         
         return true;
     }
@@ -26,8 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'applications.html',
         'application.html',
         'application-details.html',
-        'user-roles.html'
-        
+        'user-roles.html',
+        'rolepage.html' // Добавлена страница управления ролями
     ];
     
     // Проверяем, нужна ли авторизация для текущей страницы
@@ -113,6 +121,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Функция для обработки ошибок авторизации
+    function handleAuthError() {
+        clearAuthData();
+        // Перенаправляем на страницу логина, если текущая страница требует авторизации
+        if (authRequiredPages.includes(currentPage)) {
+            window.location.href = 'login.html';
+        }
+    }
+    
     if (isLoggedIn) {
         // Получаем роли пользователя через API
         fetch('http://51.250.46.2:1111/roles', {
@@ -124,13 +141,21 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
+                // Если получаем ошибку 401 (Unauthorized) или 403 (Forbidden),
+                // значит токен недействителен или истек
+                if (response.status === 401 || response.status === 403) {
+                    handleAuthError();
+                    return null;
+                }
                 throw new Error('Ошибка при получении ролей');
             }
             return response.json();
         })
         .then(roles => {
-            // Создаем хедер с полученными ролями
-            createHeader(roles);
+            if (roles) {
+                // Создаем хедер с полученными ролями
+                createHeader(roles);
+            }
         })
         .catch(error => {
             console.error('Ошибка:', error);
