@@ -58,12 +58,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!errorElement) {
             errorElement = document.createElement('div');
             errorElement.className = 'error-message';
-            const formContainer = document.querySelector('.form-container');
-            formContainer.insertBefore(errorElement, loginForm);
+            
+            // Находим форму и её родительский элемент
+            const form = document.getElementById('login-form');
+            if (form && form.parentNode) {
+                // Вставляем сообщение об ошибке перед формой
+                form.parentNode.insertBefore(errorElement, form);
+            } else {
+                // Если не можем найти родителя формы, просто используем alert
+                alert(message);
+                return;
+            }
         }
         
         // Устанавливаем сообщение об ошибке
         errorElement.textContent = message;
+        
+        // Добавляем базовые стили, если они не определены в CSS
+      
         
         // Автоматически скрываем сообщение через 5 секунд
         setTimeout(() => {

@@ -13,6 +13,10 @@ let currentApplication = null;
 let usersData = [];
 let applicationId = null;
 
+let currentAction = null;
+let currentExtensionId = null;
+
+
 // Инициализация страницы
 async function initPage() {
     try {
@@ -71,13 +75,32 @@ function setupEventListeners() {
     
     if (approveBtn) {
         approveBtn.addEventListener('click', function() {
-            changeApplicationStatus('Accepted');
+            showCommentModal('application', 'Accepted');
         });
     }
     
     if (rejectBtn) {
         rejectBtn.addEventListener('click', function() {
-            changeApplicationStatus('Rejected');
+            showCommentModal('application', 'Rejected');
+        });
+    }
+
+    // Обработчики для модального окна комментария
+    const closeModal = document.querySelector('#comment-modal .close-modal');
+    if (closeModal) {
+        closeModal.addEventListener('click', hideCommentModal);
+    }
+
+    const cancelCommentBtn = document.getElementById('cancel-comment-btn');
+    if (cancelCommentBtn) {
+        cancelCommentBtn.addEventListener('click', hideCommentModal);
+    }
+
+    const commentForm = document.getElementById('comment-form');
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitStatusWithComment();
         });
     }
 
@@ -199,6 +222,7 @@ function getUserFullName(userId) {
     return 'Неизвестный пользователь';
 }
 
+
 // Обновление интерфейса в зависимости от ролей пользователя
 function updateUIBasedOnRoles() {
     // Элементы для студента
@@ -221,7 +245,7 @@ function updateUIBasedOnRoles() {
         el.style.display = userRoles.isTeacher ? 'block' : 'none';
     });
 
-    // Кнопка удаления видна только для студентов и их собственных заявок
+    // Кнопка удаления заявки видна только для студентов и их собственных заявок
     const deleteBtn = document.getElementById('delete-application-btn');
     if (deleteBtn && currentApplication) {
         // Скрываем кнопку, если это не заявка текущего студента или статус не "На проверке"
@@ -229,6 +253,15 @@ function updateUIBasedOnRoles() {
             deleteBtn.style.display = 'none';
         }
     }
+    
+    // Корректное отображение кнопок удаления продления
+    const extensionDeleteBtns = document.querySelectorAll('.extension-delete-btn');
+    extensionDeleteBtns.forEach(btn => {
+        const parentContainer = btn.closest('.student-only');
+        if (parentContainer) {
+            parentContainer.style.display = userRoles.isStudent ? 'flex' : 'none';
+        }
+    });
 }
 
 
@@ -307,6 +340,26 @@ function populateApplicationDetails() {
     statusElement.textContent = statusText;
     statusElement.className = `application-status ${statusClass}`;
     
+    // Отображаем комментарий к заявке, если он есть
+    const commentContainer = document.querySelector('.application-main-info');
+    const existingComment = document.querySelector('.application-comment-section');
+    
+    if (existingComment) {
+        existingComment.remove();
+    }
+    
+    if (currentApplication.comment && currentApplication.comment.trim() !== '') {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'info-row application-comment-section';
+        commentElement.innerHTML = `
+            <div class="info-label">Комментарий деканата:</div>
+            <div class="info-value comment-section">
+                <div class="comment-text">${currentApplication.comment}</div>
+            </div>
+        `;
+        commentContainer.appendChild(commentElement);
+    }
+    
     // Отображаем документ, если есть
     const documentContainer = document.getElementById('document-container');
     const documentElement = document.getElementById('application-document');
@@ -346,7 +399,8 @@ function populateApplicationDetails() {
     displayExtensions();
 }
 
-// Отображение продлений
+
+
 // Отображение продлений
 function displayExtensions() {
     const extensionsList = document.getElementById('extensions-list');
@@ -385,6 +439,17 @@ function displayExtensions() {
                 break;
         }
         
+        // Создаем HTML для комментария, если он есть
+        let commentHtml = '';
+        if (extension.comment && extension.comment.trim() !== '') {
+            commentHtml = `
+                <div class="comment-section">
+                    <div class="comment-title">Комментарий деканата:</div>
+                    <div class="comment-text">${extension.comment}</div>
+                </div>
+            `;
+        }
+        
         // Создаем HTML для документа, если он есть
         let documentHtml = '';
         if (extension.image && extension.image.trim() !== '') {
@@ -418,12 +483,22 @@ function displayExtensions() {
         }
         
         // Кнопки управления для деканата (для продлений в статусе "На проверке")
-        let actionButtons = '';
-        if ((userRoles.isDean || userRoles.isAdmin)) {
-            actionButtons = `
+        let deanActionButtons = '';
+        if ((userRoles.isDean || userRoles.isAdmin) && extension.status === 'inProcess') {
+            deanActionButtons = `
                 <div class="extension-actions">
-                    <button class="btn extension-approve-btn" data-id="${extension.id}">Одобрить</button>
-                    <button class="btn extension-reject-btn" data-id="${extension.id}">Отклонить</button>
+                    <button class="btn btn-success extension-approve-btn" data-id="${extension.id}">Одобрить</button>
+                    <button class="btn btn-danger extension-reject-btn" data-id="${extension.id}">Отклонить</button>
+                </div>
+            `;
+        }
+        
+        // Кнопка удаления продления для студента (только если статус "На проверке")
+        let studentActionButtons = '';
+        if (userRoles.isStudent && extension.status === 'inProcess') {
+            studentActionButtons = `
+                <div class="extension-actions student-only">
+                    <button class="btn btn-danger extension-delete-btn" data-id="${extension.id}">Удалить</button>
                 </div>
             `;
         }
@@ -438,8 +513,10 @@ function displayExtensions() {
                     <div class="extension-status ${statusClass}">${statusText}</div>
                 </div>
                 <div class="extension-description">${extension.description}</div>
+                ${commentHtml}
                 ${documentHtml}
-                ${actionButtons}
+                ${deanActionButtons}
+                ${studentActionButtons}
             </div>
         `;
     });
@@ -450,20 +527,31 @@ function displayExtensions() {
     document.querySelectorAll('.extension-approve-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const extensionId = this.getAttribute('data-id');
-            changeExtensionStatus(extensionId, 'Accepted');
+            showCommentModal('extension', 'Accepted', extensionId);
         });
     });
     
     document.querySelectorAll('.extension-reject-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const extensionId = this.getAttribute('data-id');
-            changeExtensionStatus(extensionId, 'Rejected');
+            showCommentModal('extension', 'Rejected', extensionId);
         });
     });
+    
+    // Добавляем обработчики для кнопок удаления продлений
+    document.querySelectorAll('.extension-delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const extensionId = this.getAttribute('data-id');
+            deleteExtension(extensionId);
+        });
+    });
+    
+    // Обновляем отображение элементов в зависимости от ролей
+    updateUIBasedOnRoles();
 }
 
 // Изменение статуса заявки
-async function changeApplicationStatus(newStatus) {
+async function changeApplicationStatus(newStatus, comment = '') {
     try {
         const response = await fetch(`http://51.250.46.2:1111/application/${applicationId}/status`, {
             method: 'POST',
@@ -471,7 +559,10 @@ async function changeApplicationStatus(newStatus) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getToken()}`
             },
-            body: JSON.stringify({ status: newStatus })
+            body: JSON.stringify({ 
+                status: newStatus,
+                comment: comment 
+            })
         });
 
         if (!response.ok) {
@@ -498,7 +589,7 @@ async function changeApplicationStatus(newStatus) {
 }
 
 // Изменение статуса продления
-async function changeExtensionStatus(extensionId, newStatus) {
+async function changeExtensionStatus(extensionId, newStatus, comment = '') {
     try {
         const response = await fetch(`http://51.250.46.2:1111/extensionApplication/${extensionId}/status`, {
             method: 'POST',
@@ -506,7 +597,10 @@ async function changeExtensionStatus(extensionId, newStatus) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getToken()}`
             },
-            body: JSON.stringify({ status: newStatus })
+            body: JSON.stringify({ 
+                status: newStatus,
+                comment: comment 
+            })
         });
 
         if (!response.ok) {
@@ -528,6 +622,8 @@ async function changeExtensionStatus(extensionId, newStatus) {
         showMessage('error', 'Не удалось изменить статус продления');
     }
 }
+
+
 // Удаление заявки
 async function deleteApplication() {
     // Подтверждение удаления
@@ -722,4 +818,83 @@ function isImageFile(base64String) {
     }
     
     return false;
+}
+
+
+function showCommentModal(type, status, extensionId = null) {
+    const modal = document.getElementById('comment-modal');
+    const title = document.getElementById('comment-modal-title');
+    
+    currentAction = { type, status };
+    currentExtensionId = extensionId;
+    
+    // Настраиваем заголовок
+    const actionText = status === 'Accepted' ? 'одобрения' : 'отклонения';
+    const entityText = type === 'application' ? 'заявки' : 'продления';
+    title.textContent = `Комментарий для ${actionText} ${entityText}`;
+    
+    // Очищаем поле комментария
+    document.getElementById('status-comment').value = '';
+    
+    // Показываем модальное окно
+    modal.style.display = 'block';
+}
+
+function hideCommentModal() {
+    const modal = document.getElementById('comment-modal');
+    modal.style.display = 'none';
+    currentAction = null;
+    currentExtensionId = null;
+}
+
+async function submitStatusWithComment() {
+    if (!currentAction) return;
+    
+    const comment = document.getElementById('status-comment').value;
+    
+    try {
+        if (currentAction.type === 'application') {
+            await changeApplicationStatus(currentAction.status, comment);
+        } else if (currentAction.type === 'extension' && currentExtensionId) {
+            await changeExtensionStatus(currentExtensionId, currentAction.status, comment);
+        }
+        
+        // Скрываем модальное окно
+        hideCommentModal();
+        
+    } catch (error) {
+        console.error('Ошибка при отправке статуса с комментарием:', error);
+        showMessage('error', 'Не удалось изменить статус');
+    }
+}
+
+async function deleteExtension(extensionId) {
+    // Подтверждение удаления
+    if (!confirm('Вы действительно хотите удалить это продление?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://51.250.46.2:1111/extensionApplication/${extensionId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Не удалось удалить продление');
+        }
+
+        // Обновляем данные заявки
+        await loadApplicationDetails();
+        
+        // Показываем сообщение об успехе
+        showMessage('success', 'Продление успешно удалено');
+
+    } catch (error) {
+        console.error('Ошибка при удалении продления:', error);
+        showMessage('error', 'Не удалось удалить продление');
+    }
 }
