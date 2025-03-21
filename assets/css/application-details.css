@@ -295,27 +295,15 @@
     margin-bottom: 5px;
 }
 
-/* Стили для отображения комментариев */
-.comment-section {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    border-left: 3px solid #346CB0;
-}
-
-.comment-title {
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 5px;
-}
 
 .comment-text {
     font-style: italic;
 }
 
 .application-comment-section {
-    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* Выравнивание текста и заголовка по центру */
 }
 
 /* Модальное окно для комментариев */

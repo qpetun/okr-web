@@ -484,7 +484,7 @@ function displayExtensions() {
         
         // Кнопки управления для деканата (для продлений в статусе "На проверке")
         let deanActionButtons = '';
-        if ((userRoles.isDean || userRoles.isAdmin) && extension.status === 'inProcess') {
+        if ((userRoles.isDean || userRoles.isAdmin)) {
             deanActionButtons = `
                 <div class="extension-actions">
                     <button class="btn btn-success extension-approve-btn" data-id="${extension.id}">Одобрить</button>
