@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Функция для отображения ошибок (более красивый вариант вместо alert)
+    // Функция для отображения ошибок
     function showError(message) {
         // Проверяем, существует ли уже элемент с ошибкой
         let errorElement = document.querySelector('.error-message');

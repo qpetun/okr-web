@@ -79,19 +79,19 @@
 }
 
 .role-student {
-    background-color: #4CAF50; /* Более приятный зеленый */
+    background-color: #4CAF50; 
 }
 
 .role-teacher {
-    background-color: #2196F3; /* Более приятный синий */
+    background-color: #2196F3; 
 }
 
 .role-dean {
-    background-color: #9C27B0; /* Фиолетовый для деканата */
+    background-color: #9C27B0; 
 }
 
 .role-admin {
-    background-color: #F44336; /* Красный для администратора */
+    background-color: #F44336; 
 }
 
 .btn-manage {
@@ -161,10 +161,10 @@
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    line-height: 20px; /* Добавлено для выравнивания */
-    margin-top: -5px; /* Добавлено для поднятия крестика */
-    position: relative; /* Добавлено для лучшего позиционирования */
-    top: -5px; /* Добавлено для поднятия крестика */
+    line-height: 20px; 
+    margin-top: -5px; 
+    position: relative; 
+    top: -5px;
 }
 
 .close-modal:hover {
@@ -202,7 +202,7 @@
     margin-right: 8px;
     width: 18px;
     height: 18px;
-    accent-color: #346CB0; /* Подсветка выбранной радиокнопки в цвет темы */
+    accent-color: #346CB0; 
 }
 
 /* Стиль для отключенных опций */

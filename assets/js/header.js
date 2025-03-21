@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'application.html',
         'application-details.html',
         'user-roles.html',
-        'rolepage.html' // Добавлена страница управления ролями
+        'rolepage.html' 
     ];
     
     // Проверяем, нужна ли авторизация для текущей страницы
