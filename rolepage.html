@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета пропусков - Управление ролями</title>
+    <link rel="stylesheet" href="assets/css/rolepage.css">
+</head>
+<body>
+    <!-- Добавляем header -->
+    <header class="main-header"></header>
+
+    <div class="container">
+        <div class="admin-container">
+            <div class="section-header">
+                <h2>Управление ролями пользователей</h2>
+            </div>
+            
+            <div class="users-list-container">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Поиск по имени или фамилии">
+                </div>
+                
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ФИО</th>
+                                <th>Email</th>
+                                <th>Управление ролями</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Данные будут загружены через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination" class="pagination">
+                    <!-- Пагинация будет добавлена через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для управления ролями -->
+    <div id="roleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Управление ролями пользователя</h3>
+            <div id="userInfo" class="user-info">
+                <!-- Информация о пользователе -->
+            </div>
+            <div class="role-selection">
+                <div class="form-group">
+                    <label>Выберите роли:</label>
+                    <div class="role-options">
+                        <label class="role-option">
+                            <input type="checkbox" name="role" value="Student"> Студент
+                        </label>
+                        <label class="role-option">
+                            <input type="checkbox" name="role" value="Teacher"> Преподаватель
+                        </label>
+                        <label class="role-option">
+                            <input type="checkbox" name="role" value="Dean"> Деканат
+                        </label>
+                        <label class="role-option">
+                            <input type="checkbox" name="role" value="Admin"> Администратор
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-role-btn" class="btn btn-secondary">Отмена</button>
+                    <button type="button" id="save-role-btn" class="btn btn-primary">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/header.js"></script>
+    <script src="assets/js/rolepage.js"></script>
+</body>
+</html>

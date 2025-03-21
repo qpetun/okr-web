@@ -1,20 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем наличие токена авторизации
-    if (!getToken()) {
-        window.location.href = 'login.html';
-        return;
+    // Функция проверки токена
+    function isValidToken() {
+        const token = localStorage.getItem('authToken');
+        if (!token) return false;  
+        
+        return true;
+        
+        
     }
+    
+    // Функция для очистки данных авторизации
+    function clearAuthData() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('tokenExpiry');
+        localStorage.removeItem('user');
+    }
+    
     // Получаем текущую страницу
     const currentPage = window.location.pathname.split('/').pop();
     
-    // Определяем, авторизован ли пользователь
-    const isLoggedIn = localStorage.getItem('authToken') !== null;
+    // Проверяем валидность токена авторизации
+    const isLoggedIn = isValidToken();
     
     // Список страниц, требующих авторизации
     const authRequiredPages = [
         'profile.html',
         'applications.html',
-        'application.html'
+        'application.html',
+        'create-application.html'
         // Добавьте сюда другие страницы, требующие авторизации
     ];
     
@@ -34,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" ${currentPage === 'index.html' || currentPage === '' ? 'class="active"' : ''}>Главная</a></li>
+                    
     `;
     
     // Добавляем пункты меню в зависимости от авторизации
@@ -83,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            localStorage.removeItem('authToken');
+            clearAuthData();
             window.location.href = 'login.html';
         });
     }
