@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
         'profile.html',
         'applications.html',
         'application.html',
-        'create-application.html',
+        'application-details.html',
         'user-roles.html'
-        // Добавьте сюда другие страницы, требующие авторизации
+        
     ];
     
     // Проверяем, нужна ли авторизация для текущей страницы
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Проверяем роль пользователя для отображения соответствующих пунктов меню
             if (userRoles && userRoles.isStudent) {
                 headerHTML += `
-                    <li><a href="create-application.html" ${currentPage === 'create-application.html' ? 'class="active"' : ''}>Создать заявку</a></li>
+                    <li><a href="application.html" ${currentPage === 'application.html' ? 'class="active"' : ''}>Создать заявку</a></li>
                 `;
             }
             

@@ -1,4 +1,3 @@
-// admin.js - Скрипт для страницы управления ролями пользователей
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация страницы
     initPage();
@@ -186,7 +185,6 @@ function filterUsers() {
 }
 
 // Отображение списка пользователей с пагинацией
-// Отображение списка пользователей с пагинацией
 function displayUsers() {
     const usersTableBody = document.getElementById('usersTableBody');
     usersTableBody.innerHTML = '<tr><td colspan="3">Загрузка пользователей...</td></tr>';
@@ -218,7 +216,7 @@ function displayUsers() {
         nameTd.textContent = `${user.surname} ${user.name}`;
         tr.appendChild(nameTd);
         
-        // Email (будет загружен позже)
+        // Email и роли (будут загружены позже)
         const emailTd = document.createElement('td');
         emailTd.textContent = 'Загрузка...';
         emailTd.dataset.userId = user.id;
@@ -245,15 +243,28 @@ function displayUsers() {
     // Обновляем пагинацию
     updatePagination(filteredUsers.length);
     
-    // Загружаем email для каждого пользователя асинхронно
+    // Загружаем email и роли для каждого пользователя асинхронно
     for (const user of paginatedUsers) {
         fetchUserDetails(user.id).then(userDetails => {
             const emailTd = document.querySelector(`td[data-user-id="${user.id}"]`);
             if (emailTd) {
-                emailTd.textContent = userDetails.email || 'Нет данных';
+                // Отображаем email
+                let emailText = userDetails.email || 'Нет данных';
+                
+                // Добавляем информацию о ролях
+                let rolesList = [];
+                if (userDetails.isStudent) rolesList.push('<span class="role-badge role-student">Студент</span>');
+                if (userDetails.isTeacher) rolesList.push('<span class="role-badge role-teacher">Преподаватель</span>');
+                if (userDetails.isDean) rolesList.push('<span class="role-badge role-dean">Деканат</span>');
+                if (userDetails.isAdmin) rolesList.push('<span class="role-badge role-admin">Администратор</span>');
+                
+                emailTd.innerHTML = `
+                    <div>${emailText}</div>
+                    <div class="user-roles">${rolesList.join(' ')}</div>
+                `;
             }
         }).catch(error => {
-            console.error(`Ошибка при загрузке email для пользователя ${user.id}:`, error);
+            console.error(`Ошибка при загрузке данных для пользователя ${user.id}:`, error);
             const emailTd = document.querySelector(`td[data-user-id="${user.id}"]`);
             if (emailTd) {
                 emailTd.textContent = 'Ошибка загрузки';
@@ -261,7 +272,6 @@ function displayUsers() {
         });
     }
 }
-
 // Обновление пагинации
 function updatePagination(totalItems) {
     const paginationElement = document.getElementById('pagination');
@@ -322,10 +332,17 @@ function openRoleModal(userId, userDetails) {
     const modal = document.getElementById('roleModal');
     const userInfo = document.getElementById('userInfo');
     
-    // Отображаем информацию о пользователе
+    // Отображаем информацию о пользователе, включая текущие роли
+    let rolesText = [];
+    if (userDetails.isStudent) rolesText.push('Студент');
+    if (userDetails.isTeacher) rolesText.push('Преподаватель');
+    if (userDetails.isDean) rolesText.push('Деканат');
+    if (userDetails.isAdmin) rolesText.push('Администратор');
+    
     userInfo.innerHTML = `
         <p><strong>ФИО:</strong> ${userDetails.surname} ${userDetails.name}${userDetails.patronymic ? ' ' + userDetails.patronymic : ''}</p>
         <p><strong>Email:</strong> ${userDetails.email || 'Нет данных'}</p>
+        <p><strong>Текущие роли:</strong> ${rolesText.length > 0 ? rolesText.join(', ') : 'Нет ролей'}</p>
     `;
     
     // Проверяем, может ли текущий пользователь изменять роли
@@ -344,17 +361,17 @@ function openRoleModal(userId, userDetails) {
     // Отображаем форму выбора ролей
     document.querySelector('.role-selection').style.display = 'block';
     
-    // Проверяем доступные для назначения роли в зависимости от прав текущего пользователя
+    // Изменяем чекбоксы на радиокнопки для выбора только одной роли (без опции Администратор)
     const roleOptions = document.querySelector('.role-options');
     roleOptions.innerHTML = `
         <label class="role-option">
-            <input type="checkbox" name="role" value="Student"> Студент
+            <input type="radio" name="role" value="Student" ${userDetails.isStudent ? 'checked' : ''}> Студент
         </label>
         <label class="role-option" style="opacity: ${(userRoles.isAdmin || userRoles.isDean) ? 1 : 0.5}">
-            <input type="checkbox" name="role" value="Teacher" ${!(userRoles.isAdmin || userRoles.isDean) ? 'disabled' : ''}> Преподаватель
+            <input type="radio" name="role" value="Teacher" ${userDetails.isTeacher ? 'checked' : ''} ${!(userRoles.isAdmin || userRoles.isDean) ? 'disabled' : ''}> Преподаватель
         </label>
         <label class="role-option" style="opacity: ${userRoles.isAdmin ? 1 : 0.5}">
-            <input type="checkbox" name="role" value="Dean" ${!userRoles.isAdmin ? 'disabled' : ''}> Деканат
+            <input type="radio" name="role" value="Dean" ${userDetails.isDean ? 'checked' : ''} ${!userRoles.isAdmin ? 'disabled' : ''}> Деканат
         </label>
     `;
     
@@ -383,39 +400,69 @@ async function saveUserRole() {
         return;
     }
     
-    // Получаем выбранные роли
-    const selectedRoles = document.querySelectorAll('input[name="role"]:checked');
-    if (selectedRoles.length === 0) {
-        showMessage('error', 'Пожалуйста, выберите хотя бы одну роль');
+    // Получаем выбранную роль
+    const selectedRole = document.querySelector('input[name="role"]:checked');
+    if (!selectedRole) {
+        showMessage('error', 'Пожалуйста, выберите роль');
         return;
     }
     
-    // Определяем самую высокую выбранную роль для отправки на сервер
-    let highestRole = '';
+    const roleValue = selectedRole.value;
     
-    if (Array.from(selectedRoles).some(role => role.value === 'Dean') && userRoles.isAdmin) {
-        highestRole = 'Dean';
-    } else if (Array.from(selectedRoles).some(role => role.value === 'Teacher') && (userRoles.isAdmin || userRoles.isDean)) {
-        highestRole = 'Teacher';
-    } else if (Array.from(selectedRoles).some(role => role.value === 'Student')) {
-        highestRole = 'Student';
+    // Проверяем права на назначение выбранной роли
+    if (roleValue === 'Dean' && !userRoles.isAdmin) {
+        showMessage('error', 'У вас нет прав для назначения этой роли');
+        return;
     }
     
-    // Если роль не выбрана или недостаточно прав для выбранной роли
-    if (!highestRole) {
-        showMessage('error', 'У вас нет прав для назначения выбранной роли');
+    if (roleValue === 'Teacher' && !userRoles.isAdmin && !userRoles.isDean) {
+        showMessage('error', 'У вас нет прав для назначения этой роли');
         return;
     }
     
     try {
-        // Отправляем запрос на изменение роли
+        // Получаем текущую информацию о пользователе
+        const userDetails = await fetchUserDetails(selectedUserId);
+        
+        // Проверяем, имеет ли пользователь уже эту роль
+        const hasRole = 
+            (roleValue === 'Student' && userDetails.isStudent) ||
+            (roleValue === 'Teacher' && userDetails.isTeacher) ||
+            (roleValue === 'Dean' && userDetails.isDean);
+        
+        // Если пользователь уже имеет эту роль, то предупреждаем
+        if (hasRole) {
+            showMessage('error', 'Пользователь уже имеет эту роль');
+            closeRoleModal();
+            return;
+        }
+        
+        // Сначала удаляем все текущие роли (кроме Admin, которую мы не трогаем)
+        const currentRoles = [];
+        if (userDetails.isStudent) currentRoles.push('Student');
+        if (userDetails.isTeacher) currentRoles.push('Teacher');
+        if (userDetails.isDean) currentRoles.push('Dean');
+        
+        // Выполняем последовательные запросы для удаления всех текущих ролей
+        for (const role of currentRoles) {
+            await fetch(`http://51.250.46.2:1111/user/${selectedUserId}/role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ role: role })
+            });
+        }
+        
+        // Затем добавляем новую роль
         const response = await fetch(`http://51.250.46.2:1111/user/${selectedUserId}/role`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getToken()}`
             },
-            body: JSON.stringify({ role: highestRole })
+            body: JSON.stringify({ role: roleValue })
         });
         
         if (!response.ok) {
@@ -427,9 +474,6 @@ async function saveUserRole() {
             }
         }
         
-        const updatedUser = await response.json();
-        console.log('Роль пользователя обновлена:', updatedUser);
-        
         // Закрываем модальное окно
         closeRoleModal();
         
@@ -437,6 +481,7 @@ async function saveUserRole() {
         showMessage('success', 'Роль пользователя успешно обновлена');
         
         // Обновляем список пользователей
+        await fetchUsers(); // Обновляем список пользователей из API
         displayUsers();
         
     } catch (error) {
